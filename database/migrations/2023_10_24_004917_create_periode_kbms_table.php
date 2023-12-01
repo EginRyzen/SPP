@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spps', function (Blueprint $table) {
+        Schema::create('periode_kbms', function (Blueprint $table) {
             $table->id();
-            $table->string('keterangan')->nullable();
-            $table->integer('nominal')->nullable();
+            $table->string('periodekbm_periode', 45)->nullable();
+            $table->date('periodekbm_tanggalawal')->nullable();
+            $table->date('periodekbm_tanggalakhir')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spps');
+        Schema::dropIfExists('periode_kbms');
     }
 };

@@ -11,8 +11,6 @@ class Siswa extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'id_kelas',
-        'id_spp',
         'id_user',
         'nisn',
         'nis',

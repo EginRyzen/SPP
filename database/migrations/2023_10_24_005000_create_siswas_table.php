@@ -13,10 +13,6 @@ return new class extends Migration
     {
         Schema::create('siswas', function (Blueprint $table) {
             $table->id();
-            $table->foreign('id_kelas')->references('id')->on('kelas');
-            $table->unsignedBigInteger('id_kelas');
-            $table->foreign('id_spp')->references('id')->on('spps');
-            $table->unsignedBigInteger('id_spp');
             $table->foreign('id_user')->references('id')->on('users');
             $table->unsignedBigInteger('id_user');
             $table->char('nisn', 10)->nullable();

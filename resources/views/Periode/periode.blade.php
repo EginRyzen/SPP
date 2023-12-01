@@ -11,24 +11,25 @@
                 <div class="col-md-12">
                     <div class="fresh-table full-color-orange">
                         <div class="toolbar">
-                            <button class="btn btn-default" data-toggle="modal" data-target="#spp">Tambah SPP</button>
+                            <button class="btn btn-default" data-toggle="modal" data-target="#periode">Tambah Kelas</button>
                         </div>
                         @if (session()->has('hapus'))
-                            <div class="alert alert-success fw-bold" role="alert">
-                                User Telah Terhapus
+                            <div class="alert alert-danger text-white fw-bold" role="alert">
+                                Kelas Telah Terhapus
                             </div>
                         @endif
-                        @if (session()->has('pesan'))
-                            <div class="alert alert-danger fw-bold text-white" role="alert">
-                                User Tinggal Satu Tidak Dapat Di Hapus
+                        @if (session()->has('update'))
+                            <div class="alert alert-success fw-bold text-white" role="alert">
+                                Update Telah berhasil
                             </div>
                         @endif
                         <table class="table" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Keterangan</th>
-                                    <th>Nominal</th>
+                                    <th>Tahun KBM</th>
+                                    <th>Tahun Awal</th>
+                                    <th>Tahun Akhir</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -36,19 +37,20 @@
                                 @php
                                     $no = 1;
                                 @endphp
-                                @foreach ($spp as $data)
+                                @foreach ($periode as $data)
                                     <tr>
                                         <td class="fw-bold">{{ $no++ }}.</td>
-                                        <td class="fw-bold">{{ $data->keterangan }}</td>
-                                        <td class="fw-bold">Rp. {{ number_format($data->nominal, 0, ',', '.') }}</td>
+                                        <td class="fw-bold">{{ $data->periodekbm_periode }}</td>
+                                        <td class="fw-bold">{{ $data->periodekbm_tanggalawal }}</td>
+                                        <td class="fw-bold">{{ $data->periodekbm_tanggalakhir }}</td>
                                         <td class="text-center">
                                             <a href="{{ $data->id }}" type="button" class="m-2" data-toggle="modal"
-                                                data-target="#spp{{ $data->id }}"><i class="fa fa-edit"></i></a>
-                                            <a href="{{ url('spp/' . $data->id) }}"><i class="fa fa-trash"></i></a>
+                                                data-target="#periode{{ $data->id }}"><i class="fa fa-edit"></i></a>
+                                            <a href="{{ url('periode/' . $data->id) }}"><i class="fa fa-trash"></i></a>
                                         </td>
                                     </tr>
                                     {{-- Update Modal --}}
-                                    <div class="modal fade" id="spp{{ $data->id }}" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="periode{{ $data->id }}" tabindex="-1" role="dialog"
                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -59,28 +61,38 @@
                                                         <span aria-hidden="true">×</span>
                                                     </button>
                                                 </div>
-                                                <form action="{{ url('spp/' . $data->id) }}" method="POST">
+                                                <form action="{{ url('periode/' . $data->id) }}" method="POST">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body">
                                                         <div class="form-group row">
                                                             <div class="col-md-3 mt-2">
-                                                                <label for="">Keterangan :</label>
+                                                                <label for="">Tahun KBM :</label>
                                                             </div>
                                                             <div class="col-md-8">
-                                                                <input type="text" name="keterangan"
-                                                                    value="{{ $data->keterangan }}" class="form-control"
-                                                                    required>
+                                                                <input type="text" name="periodekbm_periode"
+                                                                    value="{{ $data->periodekbm_periode }}"
+                                                                    class="form-control" required>
                                                             </div>
                                                         </div>
                                                         <div class="form-group row">
                                                             <div class="col-md-3 mt-2">
-                                                                <label for="">Nominal :</label>
+                                                                <label for="">Tahun Awal :</label>
                                                             </div>
                                                             <div class="col-md-8">
-                                                                <input type="text" name="nominal"
-                                                                    value="{{ $data->nominal }}" class="form-control"
-                                                                    required>
+                                                                <input type="date" name="periodekbm_tanggalawal"
+                                                                    value="{{ $data->periodekbm_tanggalawal }}"
+                                                                    class="form-control" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <div class="col-md-3 mt-2">
+                                                                <label for="">Tahun Akhir :</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <input type="date" name="periodekbm_tanggalakhir"
+                                                                    value="{{ $data->periodekbm_tanggalakhir }}"
+                                                                    class="form-control" required>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -103,33 +115,41 @@
     </div>
 
     {{-- Create Modal --}}
-    <div class="modal fade" id="spp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="periode" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create SPP</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Create PeriodeKBM</h5>
                     <button class="btn btn-default close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ route('spp.store') }}" method="POST">
+                <form action="{{ route('periode.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group row">
                             <div class="col-md-3 mt-2">
-                                <label for="">Keterangan :</label>
+                                <label for="">Tahun KBM :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="keterangan" class="form-control" required>
+                                <input type="text" name="periodekbm_periode" class="form-control" required>
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-3 mt-2">
-                                <label for="">Nominal :</label>
+                                <label for="">Tahun Awal :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="nominal" class="form-control" required>
+                                <input type="date" name="periodekbm_tanggalawal" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3 mt-2">
+                                <label for="">Tahun Akhir :</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="date" name="periodekbm_tanggalakhir" class="form-control" required>
                             </div>
                         </div>
                     </div>

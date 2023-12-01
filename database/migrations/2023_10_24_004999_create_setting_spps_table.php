@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spps', function (Blueprint $table) {
+        Schema::create('setting_spps', function (Blueprint $table) {
             $table->id();
-            $table->string('keterangan')->nullable();
-            $table->integer('nominal')->nullable();
+            $table->foreign('id_spp')->references('id')->on('spps');
+            $table->unsignedBigInteger('id_spp');
+            $table->foreign('id_periode')->references('id')->on('periode_kbms');
+            $table->unsignedBigInteger('id_periode');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spps');
+        Schema::dropIfExists('setting_spps');
     }
 };

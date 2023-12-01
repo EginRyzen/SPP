@@ -14,16 +14,16 @@
                 <div class="col-md-3">
                     <div class="row">
                         <div class="card shadow-sm p-3">
-                            <h4>Silahkan Pilih Kelas</h4>
+                            <h6>Silahkan Pilih Tahun Ajaran</h6>
                             <div class="col-md-12">
                                 <label for="">Pilih Kelas Terlebih Dahulu </label>
                                 <form action="{{ url('pembayaranbaru') }}" method="GET">
                                     <div class="select2-purple">
-                                        <select name="idkelas" class="form-control select2" onchange="this.form.submit()"
+                                        <select name="id_periode" class="form-control select2" onchange="this.form.submit()"
                                             style="width: 100%;">
-                                            <option selected="selected">--- Pilih Kelas ---</option>
-                                            @foreach ($kelas as $data)
-                                                <option value="{{ $data->id }}">{{ $data->nama_kelas }}</option>
+                                            <option selected="selected">--- Pilih Tahun ---</option>
+                                            @foreach ($tahunajaran as $data)
+                                                <option value="{{ $data->id }}">{{ $data->periodekbm_periode }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -31,7 +31,7 @@
                             </div>
                         </div>
                     </div>
-                    @if (isset($datasiswa[0]['id']))
+                    @if (isset($datasiswa[0]['id_anggotakelas']))
                         <div class="row mt-3">
                             <div class="card shadow-sm p-3">
                                 <h4>Detail Siswa</h4>
@@ -59,17 +59,31 @@
                                     </ul>
                                     <ul class="d-flex list-unstyled">
                                         <li>Tahun :</li>
-                                        <li class="ms-1">{{ $datasiswa[0]['tahun'] }}
+                                        <li class="ms-1">{{ $datasiswa[0]['periodekbm_periode'] }}
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     @endif
-                    <form action="{{ url('pembayaranbaru') }}" method="GET">
-                        <div class="row mt-3">
-                            <div class="card shadow-lg p-3">
-                                <h4>Data Siswa</h4>
+                    <div class="row mt-3">
+                        <div class="card shadow-lg p-3">
+                            <h4>Cari Data Siswa</h4>
+                            <form action="{{ url('pembayaranbaru') }}" method="GET">
+                                <div class="col-md-12">
+                                    <label for="">Pilih Kelas Terlebih Dahulu </label>
+                                    <div class="select2-purple">
+                                        <select name="idkelas" class="form-control select2" onchange="this.form.submit()"
+                                            style="width: 100%;">
+                                            <option selected="selected">--- Pilih Kelas ---</option>
+                                            @foreach ($siswa as $data)
+                                                <option value="{{ $data->kelas_id }}">{{ $data->nama_kelas }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                            <form action="{{ url('pembayaranbaru') }}" method="GET">
                                 <div class="col-md-12">
                                     <label for="">Pilih Siswa</label>
                                     <div class="select2-purple">
@@ -77,18 +91,15 @@
                                             style="width: 100%;">
                                             <option value="" selected disabled>Silahkan Pilih Siswa</option>
                                             @foreach ($siswa as $data)
-                                                <option value="{{ $data->id }}">{{ $data->nama }} |
+                                                <option value="{{ $data->id_anggotakelas }}">{{ $data->nama }} |
                                                     {{ $data->nama_kelas }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                {{-- <div class="col-md-12">
-                                    <button class="btn btn-success float-end mt-2" type="submit">Lihat</button>
-                                </div> --}}
-                            </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="col-md-8 ms-2">
                     <div class="row">
@@ -106,7 +117,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @if (isset($datasiswa[0]['id']))
+                                                @if (isset($datasiswa[0]['id_anggotakelas']))
                                                     @php
                                                         $no = 1;
                                                     @endphp
@@ -120,10 +131,10 @@
                                                                         {{ $bln }}</td>
                                                                     <td class="fw-bold">
                                                                         @csrf
-                                                                        <input type="hidden" name="id_siswa"
-                                                                            value="{{ $datasiswa[0]['id'] }}">
+                                                                        <input type="hidden" name="id_anggotakelas"
+                                                                            value="{{ $datasiswa[0]['id_anggotakelas'] }}">
                                                                         <input type="hidden" name="tahun_bayar"
-                                                                            value="{{ $datasiswa[0]['tahun'] }}">
+                                                                            value="{{ $datasiswa[0]['periodekbm_periode'] }}">
                                                                         <input type="hidden" name="nominal"
                                                                             value="{{ $datasiswa[0]['nominal'] }}">
                                                                         Belum Bayar
@@ -140,8 +151,8 @@
                                                             <td>
                                                                 <button type="submit"
                                                                     class="btn btn-primary mt-3">Proses</button>
-                                                                @if (isset($datasiswa[0]['id']))
-                                                                    <a href="{{ url('print/' . $datasiswa[0]['id']) }}"
+                                                                @if (isset($datasiswa[0]['id_anggotakelas']))
+                                                                    <a href="{{ url('print/' . $datasiswa[0]['id_anggotakelas']) }}"
                                                                         class="btn btn-secondary mt-3"
                                                                         target="_blank">Print</a>
                                                                 @endif
@@ -151,14 +162,6 @@
                                                 @endif
                                             </tbody>
                                         </table>
-                                        {{-- @if (isset($datasiswa[0]['id']))
-                                            <div class="float-end mt-2">
-                                                <a role="button" href="{{ url('reset') }}"
-                                                    class="btn btn-danger">Reset</a>
-                                                <a role="button" href="{{ url('store') }}" class="btn btn-primary">Bayar
-                                                    Semua</a>
-                                            </div>
-                                        @endif --}}
                                     </div>
                                 </div>
                             </div>

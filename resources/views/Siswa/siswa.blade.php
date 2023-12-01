@@ -31,11 +31,10 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th>Nama</th>
+                                        <th>Nisn</th>
                                         <th>Nis</th>
-                                        <th>Nama Kelas</th>
                                         <th>Alamat</th>
-                                        <th>Tahun</th>
-                                        <th>Nominal</th>
+                                        <th>No Telp.</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -46,15 +45,11 @@
                                     @foreach ($siswa as $data)
                                         <tr>
                                             <td class="fw-bold">{{ $no++ }}.</td>
-                                            <td class="fw-bold"><i class="fas fa-user"></i><a
-                                                    href="{{ url('datasiswa/' . $data->id) }}"
-                                                    class="text-primary ms-1">{{ Str::limit($data->nama, 20) }}</a>
-                                            </td>
+                                            <td class="fw-bold"><a href="">{{ Str::limit($data->nama, 20) }}</a></td>
+                                            <td class="fw-bold">{{ $data->nisn }}</td>
                                             <td class="fw-bold">{{ $data->nis }}</td>
-                                            <td class="fw-bold">{{ $data->nama_kelas }}</td>
                                             <td class="fw-bold">{{ $data->alamat }}</td>
-                                            <td class="fw-bold">{{ $data->tahun }}</td>
-                                            <td class="fw-bold">Rp. {{ number_format($data->nominal, 0, ',', '.') }}</td>
+                                            <td class="fw-bold">{{ $data->no_telp }}</td>
                                             <td class="text-center">
                                                 <a href="{{ $data->id }}" type="button" class="m-2"
                                                     data-toggle="modal" data-target="#siswa{{ $data->id }}"><i
@@ -80,40 +75,6 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">Nama Kelas :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <select name="id_kelas" class="form-select"
-                                                                        id="" required>
-                                                                        @foreach ($kelas as $kls)
-                                                                            <option value="{{ $kls->id }}"
-                                                                                @if ($kls->id == $data->id_kelas) selected @endif>
-                                                                                {{ $data->nama_kelas }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">SPP Tahun :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <select name="id_spp" class="form-select"
-                                                                        id="" required>
-                                                                        @foreach ($spp as $row)
-                                                                            <option value="{{ $row->id }}"
-                                                                                @if ($row->id == $data->id_spp) selected @endif>
-                                                                                Rp.
-                                                                                {{ number_format($row->nominal, 0, ',', '.') }}
-                                                                                | Tahun
-                                                                                {{ $row->tahun }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
                                                             <div class="form-group row">
                                                                 <div class="col-md-3 mt-2">
                                                                     <label for="">NIS :</label>
@@ -231,33 +192,6 @@
                     <div class="modal-body">
                         <div class="form-group row">
                             <div class="col-md-2 mt-2">
-                                <label for="">Nama Kelas :</label>
-                            </div>
-                            <div class="col-md-4">
-                                <select name="id_kelas" class="form-select" id="" required>
-                                    <option value="" disabled selected>--- Pilih Kelas ---</option>
-                                    @foreach ($kelas as $data)
-                                        <option value="{{ $data->id }}">{{ $data->nama_kelas }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-2 mt-2">
-                                <label for="">SPP Tahun :</label>
-                            </div>
-                            <div class="col-md-4">
-                                <select name="id_spp" class="form-select" id="" required>
-                                    <option value="" disabled selected>--- Pilih Spp ---</option>
-                                    @foreach ($spp as $row)
-                                        <option value="{{ $row->id }}">Rp.
-                                            {{ number_format($row->nominal, 0, ',', '.') }} | Tahun
-                                            {{ $row->tahun }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-2 mt-2">
                                 <label for="">NIS :</label>
                             </div>
                             <div class="col-md-4">
@@ -304,6 +238,33 @@
                                     required>
                             </div>
 
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-2 mt-2">
+                                <label for="">Kelas :</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="id_kelas" class="form-select" required>
+                                    <option value="" selected disabled>-- Pilih Kelas --</option>
+                                    @foreach ($kelas as $data)
+                                        <option value="{{ $data->id }}">{{ $data->nama_kelas }} |
+                                            {{ $data->kompetensi_keahlian }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2 mt-2">
+                                <label for="">Tahun Periode :</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="periode" class="form-select" required>
+                                    <option value="" selected disabled>-- Pilih Tahun --</option>
+                                    @foreach ($periode as $data)
+                                        <option value="{{ $data->id }}">{{ $data->periodekbm_periode }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-2 mt-2">

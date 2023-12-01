@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kelas;
+use App\Models\Periode_kbm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,8 +18,16 @@ class KelasController extends Controller
 
         if ($user->level == 'admin') {
 
-            $kelas = Kelas::all();
-            return view('Kelas.kelas', compact('kelas'));
+            $periode = Periode_kbm::all();
+
+            $kelas = Kelas::join('periode_kbms', 'periode_kbms.id', '=', 'kelas.id_periode')
+                ->select(
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'kelas.*'
+                )
+                ->get();
+            return view('Kelas.kelas', compact('kelas', 'periode'));
         }
 
         return back();
@@ -42,6 +51,7 @@ class KelasController extends Controller
         if ($user->level == 'admin') {
 
             $data = [
+                'id_periode' => $request->id_periode,
                 'nama_kelas' => $request->nama_kelas,
                 'kompetensi_keahlian' => $request->kompetensi_keahlian,
             ];
@@ -84,6 +94,7 @@ class KelasController extends Controller
         if ($user->level == 'admin') {
 
             $data = [
+                'id_periode' => $request->id_periode,
                 'nama_kelas' => $request->nama_kelas,
                 'kompetensi_keahlian' => $request->kompetensi_keahlian,
             ];

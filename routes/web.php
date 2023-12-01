@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AnggotaKelasController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\PeriodeKbmController;
 use App\Http\Controllers\PetugasController;
+use App\Http\Controllers\SettingSppController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\SppController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +28,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('dasbord', FrontController::class);
+
+    //Periode
+    Route::resource('periode', PeriodeKbmController::class);
+
+    //AnggotaKelas
+    Route::resource('anggotakelas', AnggotaKelasController::class);
+
+    //SettingSpp
+    Route::resource('settingspp', SettingSppController::class);
 
     Route::resource('petugas', PetugasController::class);
 

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota_kelas;
 use Carbon\Carbon;
 use App\Models\Spp;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Pembayaran;
+use App\Models\Periode_kbm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,18 +23,29 @@ class PembayaranController extends Controller
 
         if ($user->level == 'admin' || $user->level == 'petugas') {
             $kelas = Kelas::all();
+            $tahunajaran = Periode_kbm::all();
 
-            $inputkelas = $request->id_kelas;
-            $siswa = Siswa::join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-                ->join('spps', 'siswas.id_spp', '=', 'spps.id')
-                ->where(function ($filter) use ($inputkelas) {
-                    if (isset($inputkelas)) {
-                        $filter->where('siswas.id_kelas', $inputkelas);
-                    }
-                })
-                ->select('kelas.nama_kelas', 'kelas.id as kelas_id', 'spps.nominal', 'spps.tahun', 'spps.id as idspp', 'siswas.*')
-                ->get();
-            return view('Pembayaran.pembayaran', compact('kelas', 'siswa'));
+            // $inputkelas = $request->id_siswa;
+            // $siswa = Anggota_kelas::join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
+            //     ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+            //     ->join('setting_spps', 'setting_spps.id', '=', 'anggotakelas.id_setting_spp')
+            //     ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
+            //     ->where(function ($filter) use ($inputkelas) {
+            //         if (isset($inputkelas)) {
+            //             $filter->where('siswas.id_kelas', $inputkelas);
+            //         }
+            //     })
+            //     ->select(
+            //         'kelas.nama_kelas',
+            //         'kelas.id as kelas_id',
+            //         'spps.nominal',
+            //         'spps.keterangan',
+            //         'spps.id as idspp',
+            //         'siswas.*',
+            //         'anggota_kelas.id as id_anggotakelas'
+            //     )
+            //     ->get();
+            return view('Pembayaran.pembayaran', compact('kelas', 'siswa', 'tahunajaran'));
         }
 
         return back();
@@ -44,11 +57,13 @@ class PembayaranController extends Controller
 
         if ($user->level == 'admin' || $user->level == 'petugas') {
 
-            $history = Pembayaran::join('users', 'pembayarans.id_petugas', '=', 'users.id')
-                ->join('siswas', 'pembayarans.id_siswa', '=', 'siswas.id')
-                ->join('spps', 'pembayarans.id_spp', '=', 'spps.id')
-                ->join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-                ->select('pembayarans.*', 'users.*', 'siswas.*', 'spps.*', 'kelas.*')
+            $history = Pembayaran::join('anggota_kelas', 'pembayarans.id_anggotakelas', '=', 'anggota_kelas.id')
+                ->join('users', 'users.id', '=', 'pembayarans.id_petugas')
+                ->join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
+                ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+                ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+                ->join('setting_spps', 'setting_spps.id', '=', 'anggota_kelas.id_setting_spp')
+                ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
                 ->get();
 
             return view('Pembayaran.history', compact('history'));
@@ -258,25 +273,58 @@ class PembayaranController extends Controller
         if ($user->level == 'admin' || $user->level == 'petugas') {
 
             $kelas = Kelas::all();
+            $tahunajaran = Periode_kbm::all();
 
             $inputkelas = $request->idkelas;
             $idSiswa = $request->id_siswa;
+            $periode = $request->id_periode;
+            // dd($periode);
 
-            $siswa = Siswa::join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-                ->join('spps', 'siswas.id_spp', '=', 'spps.id')
-                ->where(function ($filter) use ($inputkelas) {
+            $siswa = Anggota_kelas::join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
+                ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+                ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+                ->join('setting_spps', 'setting_spps.id', '=', 'anggota_kelas.id_setting_spp')
+                ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
+                ->where(function ($filter) use ($inputkelas, $periode) {
+                    if (isset($periode)) {
+                        $filter->where('anggota_kelas.id_periode', $periode);
+                    }
                     if (isset($inputkelas)) {
-                        $filter->where('siswas.id_kelas', $inputkelas);
+                        $filter->where('anggota_kelas.id_kelas', $inputkelas);
                     }
                 })
-                ->select('kelas.nama_kelas', 'kelas.id as kelas_id', 'spps.nominal', 'spps.tahun', 'spps.id as idspp', 'siswas.*')
+                ->select(
+                    'kelas.nama_kelas',
+                    'kelas.id as kelas_id',
+                    'spps.nominal',
+                    'spps.keterangan',
+                    'spps.id as idspp',
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'anggota_kelas.id as id_anggotakelas',
+                    'siswas.*'
+                )
                 ->get();
 
             if (isset($idSiswa)) {
-                $datasiswa = Siswa::join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-                    ->join('spps', 'siswas.id_spp', '=', 'spps.id')
-                    ->select('kelas.nama_kelas', 'kelas.id as kelas_id', 'spps.nominal', 'spps.tahun', 'spps.id as idspp', 'siswas.*')
-                    ->where('siswas.id', $idSiswa)
+                // dd($idSiswa);
+                $datasiswa = Anggota_kelas::join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
+                    ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+                    ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+                    ->join('setting_spps', 'setting_spps.id', '=', 'anggota_kelas.id_setting_spp')
+                    ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
+                    ->select(
+                        'kelas.nama_kelas',
+                        'kelas.id as kelas_id',
+                        'spps.nominal',
+                        'spps.keterangan',
+                        'spps.id as idspp',
+                        'periode_kbms.periodekbm_periode',
+                        'periode_kbms.id as idperiode',
+                        'anggota_kelas.id as id_anggotakelas',
+                        'siswas.*'
+                    )
+                    ->where('anggota_kelas.id', $idSiswa)
                     ->get();
 
                 // dd($datasiswa);
@@ -286,7 +334,7 @@ class PembayaranController extends Controller
                     'July', 'August', 'September', 'Oktober', 'November', 'December'
                 ];
 
-                $pembayaran = Pembayaran::where('id_siswa', $idSiswa)->get();
+                $pembayaran = Pembayaran::where('id_anggotakelas', $idSiswa)->get();
 
                 $statusPembayaran = [];
 
@@ -300,11 +348,11 @@ class PembayaranController extends Controller
                         $statusPembayaran[$bulanPembayaran] = 'Sudah Dibayar';
                     }
                 }
-                return view('Pembayaran.pembayaranbaru', compact('kelas', 'siswa', 'datasiswa', 'bulan', 'statusPembayaran'));
+                return view('Pembayaran.pembayaranbaru', compact('kelas', 'tahunajaran', 'siswa', 'datasiswa', 'bulan', 'statusPembayaran'));
             }
 
 
-            return view('Pembayaran.pembayaranbaru', compact('kelas', 'siswa'));
+            return view('Pembayaran.pembayaranbaru', compact('kelas', 'siswa', 'tahunajaran'));
         }
         return back();
     }
@@ -317,19 +365,21 @@ class PembayaranController extends Controller
 
             $user = Auth::user();
 
-            $id_siswa = $request->id_siswa;
+            $id_anggotakelas = $request->id_anggotakelas;
             $bulan = $request->bulan_bayar;
             $tahun = $request->tahun_bayar;
             $jumlahbayar = $request->nominal;
-            // dd($jumlahbayar);
+            // dd($tahun);
 
             if (isset($bulan)) {
-                $siswa = Siswa::where('id', $id_siswa)->first();
+                $siswa = Anggota_kelas::where('id', $id_anggotakelas)->first();
+                // dd($siswa);
 
                 foreach ($bulan as $bln) {
                     Pembayaran::create([
-                        'id_siswa' => $id_siswa,
-                        'id_spp' => $siswa->id_spp,
+                        'id_anggotakelas' => $siswa->id,
+                        'id_settingspp' => $siswa->id_setting_spp,
+                        'id_periode' => $siswa->id_periode,
                         'id_petugas' => $user->id,
                         'tgl_bayar' => now(),
                         'bulan_bayar' => $bln,
@@ -341,33 +391,29 @@ class PembayaranController extends Controller
 
             return back();
         }
-
-        // $siswa = Siswa::where('id', $id_siswa)->first();
-
-        // $data = [
-        //     'id_siswa' => $id_siswa,
-        //     'id_petugas' => $user->id,
-        //     'id_spp' => $siswa->id_spp,
-        //     'tgl_bayar' => now(),
-        //     'bulan_bayar' => $bulan,
-        //     'tahun_bayar' => $tahun,
-        //     'jumlah_bayar' => $jumlahbayar,
-        // ];
-
-        // dd($data);
-
-        // Pembayaran::create($data);
-
     }
 
     public function print($id)
     {
 
         // dd($id);
-        $siswa = Siswa::join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-            ->join('spps', 'siswas.id_spp', '=', 'spps.id')
-            ->select('siswas.*', 'kelas.*', 'kelas.id as id_kelas', 'kelas.nama_kelas', 'spps.*', 'spps.*')
-            ->where('siswas.id', $id)
+        $siswa = Anggota_kelas::join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
+            ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+            ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+            ->join('setting_spps', 'setting_spps.id', '=', 'anggota_kelas.id_setting_spp')
+            ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
+            ->select(
+                'kelas.nama_kelas',
+                'kelas.id as kelas_id',
+                'spps.nominal',
+                'spps.keterangan',
+                'spps.id as idspp',
+                'periode_kbms.periodekbm_periode',
+                'periode_kbms.id as idperiode',
+                'anggota_kelas.id as id_anggotakelas',
+                'siswas.*'
+            )
+            ->where('anggota_kelas.id', $id)
             ->get();
 
         $bulan = [
@@ -375,7 +421,7 @@ class PembayaranController extends Controller
             'July', 'August', 'September', 'Oktober', 'November', 'December'
         ];
 
-        $pembayaran = Pembayaran::where('id_siswa', $id)->get();
+        $pembayaran = Pembayaran::where('id_anggotakelas', $id)->get();
 
         $statusPembayaran = [];
 

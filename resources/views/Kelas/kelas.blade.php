@@ -3,6 +3,11 @@
 @section('csstable')
     <!-- DataTables -->
     <link href="{{ url('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+    <!-- DataTables -->
+    <link href="{{ asset('dist/css/adminlte.css') }}" rel="stylesheet">
 @endsection
 @section('content')
     <div class="container-fluid py-4">
@@ -29,6 +34,7 @@
                                     <th>No</th>
                                     <th>Nama Kelas</th>
                                     <th>Kompetensi Keahlian</th>
+                                    <th>Tahun Ajaran</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -41,6 +47,7 @@
                                         <td class="fw-bold">{{ $no++ }}.</td>
                                         <td class="fw-bold">{{ $data->nama_kelas }}</td>
                                         <td class="fw-bold">{{ $data->kompetensi_keahlian }}</td>
+                                        <td class="fw-bold">{{ $data->periodekbm_periode }}</td>
                                         <td class="text-center">
                                             <a href="{{ $data->id }}" type="button" class="m-2" data-toggle="modal"
                                                 data-target="#kelas{{ $data->id }}"><i class="fa fa-edit"></i></a>
@@ -48,12 +55,12 @@
                                         </td>
                                     </tr>
                                     {{-- Update Modal --}}
-                                    <div class="modal fade" id="kelas{{ $data->id }}" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="kelas{{ $data->id }}" role="dialog"
                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Update Spp</h5>
+                                                    <h5 class="modal-title" id="exampleModalLabel">Update Kelas</h5>
                                                     <button class="btn btn-default close" type="button"
                                                         data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">×</span>
@@ -63,6 +70,27 @@
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-3">
+                                                                <label for="">Tahun Ajaran</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div class="select2-purple">
+                                                                    <select name="id_periode" id="selectPeriode"
+                                                                        class="form-control select2" style="width: 100%;">
+                                                                        <option selected="selected">--- Pilih Tahun ---
+                                                                        </option>
+                                                                        @foreach ($periode as $tahun)
+                                                                            <option
+                                                                                @if ($tahun->id == $data->id_periode) selected @endif
+                                                                                value="{{ $tahun->id }}">
+                                                                                {{ $tahun->periodekbm_periode }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div class="form-group row">
                                                             <div class="col-md-3 mt-2">
                                                                 <label for="">Nama Kelas :</label>
@@ -103,8 +131,7 @@
     </div>
 
     {{-- Create Modal --}}
-    <div class="modal fade" id="kelas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="kelas" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -116,6 +143,25 @@
                 <form action="{{ route('kelas.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label for="">Tahun Ajaran</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="select2-purple">
+                                    <select name="id_periode" id="selectPeriode" class="form-control select2"
+                                        style="width: 100%;">
+                                        <option selected="selected">--- Pilih Tahun ---
+                                        </option>
+                                        @foreach ($periode as $data)
+                                            <option value="{{ $data->id }}">
+                                                {{ $data->periodekbm_periode }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group row">
                             <div class="col-md-3 mt-2">
                                 <label for="">Nama Kelas :</label>
@@ -146,6 +192,23 @@
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ asset('dist/js/demo.js') }}"></script>
+    <script>
+        $(function() {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
     <!-- Table -->
     <script src="{{ url('vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ url('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>

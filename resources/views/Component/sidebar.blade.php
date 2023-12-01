@@ -52,6 +52,17 @@
         @endif
         @if (Auth::user()->level == 'admin')
             <li class="nav-item mt-3">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Setting Dasar</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="{{ route('anggotakelas.index') }}">
+                    <div class="text-center me-2 d-flex align-items-center justify-content-center">
+                    </div>
+                    <i class="fas fa-users"></i>
+                    <span class="nav-link-text ms-1">Anggota Kelas</span>
+                </a>
+            </li>
+            <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">User Tables</h6>
             </li>
             <li class="nav-item">
@@ -74,11 +85,27 @@
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Master Tables</h6>
             </li>
             <li class="nav-item">
+                <a class="nav-link " href="{{ route('periode.index') }}">
+                    <div class="text-center me-2 d-flex align-items-center justify-content-center">
+                    </div>
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="nav-link-text ms-1">Periode KBM</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link " href="{{ route('spp.index') }}">
                     <div class="text-center me-2 d-flex align-items-center justify-content-center">
                     </div>
                     <i class="fas fa-dollar-sign"></i>
                     <span class="nav-link-text ms-1">SPP</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="{{ route('settingspp.index') }}">
+                    <div class="text-center me-2 d-flex align-items-center justify-content-center">
+                    </div>
+                    <i class="fas fa-cash-register"></i>
+                    <span class="nav-link-text ms-1">Seeting SPP</span>
                 </a>
             </li>
             <li class="nav-item">

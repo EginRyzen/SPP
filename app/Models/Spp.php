@@ -11,7 +11,7 @@ class Spp extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'tahun',
+        'keterangan',
         'nominal',
     ];
 }

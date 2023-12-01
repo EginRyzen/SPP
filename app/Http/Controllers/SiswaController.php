@@ -11,6 +11,9 @@ use App\Imports\UserImport;
 use App\Imports\SiswaImport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Anggota_kelas;
+use App\Models\Periode_kbm;
+use App\Models\Setting_spp;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -25,14 +28,11 @@ class SiswaController extends Controller
 
         if ($user->level == 'admin') {
 
+            $siswa = Siswa::all();
             $kelas = Kelas::all();
-            $spp = Spp::all();
+            $periode = Periode_kbm::all();
 
-            $siswa = Siswa::join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-                ->join('spps', 'siswas.id_spp', '=', 'spps.id')
-                ->select('kelas.nama_kelas', 'kelas.id as kelas_id', 'spps.nominal', 'spps.tahun', 'spps.id as idspp', 'siswas.*')
-                ->get();
-            return view('Siswa.siswa', compact('siswa', 'kelas', 'spp'));
+            return view('Siswa.siswa', compact('siswa', 'kelas', 'periode'));
         }
 
         return back();
@@ -69,6 +69,13 @@ class SiswaController extends Controller
 
         if ($user->level == 'admin') {
 
+            $idperiode = $request->periode;
+
+            // dd($idperiode);
+
+            $settingspp = Setting_spp::where('id', $idperiode)->first();
+            // dd($settingspp);
+
             $user = [
                 'username' => $request->username,
                 'password' => bcrypt($request->password),
@@ -80,8 +87,6 @@ class SiswaController extends Controller
 
             // $idsiswa = User::
             $data = [
-                'id_kelas' => $request->id_kelas,
-                'id_spp' => $request->id_spp,
                 'id_user' => $user->id,
                 'nisn' => $request->nisn,
                 'nis' => $request->nis,
@@ -92,7 +97,16 @@ class SiswaController extends Controller
 
             // dd($data);
 
-            Siswa::create($data);
+            $siswas = Siswa::create($data);
+
+            $anggota_kelas = [
+                'id_siswa' => $siswas->id,
+                'id_kelas' => $request->id_kelas,
+                'id_setting_spp' => $settingspp->id,
+                'id_periode' => $settingspp->id_periode,
+            ];
+
+            Anggota_kelas::create($anggota_kelas);
 
             return back();
         }
@@ -169,8 +183,6 @@ class SiswaController extends Controller
         if ($user->level == 'admin') {
 
             $data = [
-                'id_kelas' => $request->id_kelas,
-                'id_spp' => $request->id_spp,
                 'nisn' => $request->nisn,
                 'nis' => $request->nis,
                 'nama' => $request->nama,

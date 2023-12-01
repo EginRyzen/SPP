@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreign('id_petugas')->references('id')->on('users');
             $table->unsignedBigInteger('id_petugas');
-            $table->foreign('id_siswa')->references('id')->on('siswas');
-            $table->unsignedBigInteger('id_siswa');
-            $table->foreign('id_spp')->references('id')->on('spps');
-            $table->unsignedBigInteger('id_spp');
+            $table->foreign('id_anggotakelas')->references('id')->on('anggota_kelas');
+            $table->unsignedBigInteger('id_anggotakelas');
+            $table->foreign('id_settingspp')->references('id')->on('setting_spps');
+            $table->unsignedBigInteger('id_settingspp');
+            $table->foreign('id_periode')->references('id')->on('periode_kbms');
+            $table->unsignedBigInteger('id_periode');
             $table->date('tgl_bayar')->nullable();
             $table->string('tahun_bayar', 10)->nullable();
             $table->string('bulan_bayar', 20)->nullable();

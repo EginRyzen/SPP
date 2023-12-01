@@ -3,23 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Periode_kbm;
-use App\Models\Spp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class SppController extends Controller
+class PeriodeKbmController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-
         $user = Auth::user();
-        if ($user->level == 'admin') {
 
-            $spp = Spp::all();
-            return view('SPP.spp', compact('spp'));
+        if ($user->level == 'admin') {
+            $periode = Periode_kbm::all();
+            // dd($periode);
+            return view('Periode.periode', compact('periode'));
         }
 
         return back();
@@ -38,20 +37,21 @@ class SppController extends Controller
      */
     public function store(Request $request)
     {
-
         $user = Auth::user();
 
         if ($user->level == 'admin') {
-
             $data = [
-                'keterangan' => $request->keterangan,
-                'nominal' => $request->nominal,
+                'periodekbm_periode' => $request->periodekbm_periode,
+                'periodekbm_tanggalawal' => $request->periodekbm_tanggalawal,
+                'periodekbm_tanggalakhir' => $request->periodekbm_tanggalakhir,
             ];
 
-            Spp::create($data);
-        }
+            // dd($data);
 
-        return back();
+            Periode_kbm::create($data);
+
+            return back();
+        }
     }
 
     /**
@@ -59,20 +59,15 @@ class SppController extends Controller
      */
     public function show($id)
     {
-        $user = Auth::user();
+        Periode_kbm::where('id', $id)->delete();
 
-        if ($user->level == 'admin') {
-
-            Spp::where('id', $id)->delete();
-        }
-
-        return back();
+        return back()->with('hapus', 'success');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Spp $spp)
+    public function edit(periode_kbm $periode_kbm)
     {
         //
     }
@@ -85,22 +80,24 @@ class SppController extends Controller
         $user = Auth::user();
 
         if ($user->level == 'admin') {
-
             $data = [
-                'keterangan' => $request->keterangan,
-                'nominal' => $request->nominal,
+                'periodekbm_periode' => $request->periodekbm_periode,
+                'periodekbm_tanggalawal' => $request->periodekbm_tanggalawal,
+                'periodekbm_tanggalakhir' => $request->periodekbm_tanggalakhir,
             ];
 
-            Spp::where('id', $id)->update($data);
-        }
+            // dd($data);
 
-        return back();
+            Periode_kbm::where('id', $id)->update($data);
+
+            return back()->with('update', 'success');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Spp $spp)
+    public function destroy(periode_kbm $periode_kbm)
     {
         //
     }
