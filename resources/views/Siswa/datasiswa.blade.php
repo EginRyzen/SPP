@@ -7,17 +7,33 @@
                 <div class="col-md-12">
                     <div class="card shadow-sm p-4">
                         <h3 class="text-muted">*Indentitas Siswa*</h3>
-                        <h6>Nama : {{ $siswa[0]['nama'] }}</h6>
-                        <h6>Kelas : {{ $siswa[0]['nama_kelas'] }} </h6>
-                        <h6>Nisn : {{ $siswa[0]['nisn'] }}</h6>
-                        <h6>Nis : {{ $siswa[0]['nis'] }}</h6>
+                        <h6>Nama : {{ $siswa->nama }}</h6>
+                        <h6>Kelas : {{ $siswa->nama_kelas }} </h6>
+                        <h6>Nisn : {{ $siswa->nisn }}</h6>
+                        <h6>Nis : {{ $siswa->nis }}</h6>
                     </div>
                 </div>
             </div>
             <div class="row p-4">
                 <div class="col-md-12">
                     <div class="card shadow-sm p-4">
-                        <h4 class="text-muted">Data Pembayaran Setiap Bulan Tahun {{ $siswa[0]['tahun'] }}</h4>
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <h4>Pilih Kelas Dan Periode</h4>
+                                <form action="{{ url('datasiswa/' . $siswa->id) }}" method="GET">
+                                    <select name="idperiode" class="form-select" id=""
+                                        onchange="this.form.submit()">
+                                        @foreach ($periode as $tahun)
+                                            <option value="{{ $tahun->idperiode }}"
+                                                @if ($tahun->idperiode == $siswa->idperiode) selected @endif>
+                                                {{ $tahun->nama_kelas }} | {{ $tahun->periodekbm_periode }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                        <h4 class="text-muted">Data Pembayaran Setiap Bulan Tahun {{ $siswa->periodekbm_periode }}</h4>
                         <table class="table table-hover">
                             <thead>
                                 <th>No</th>
@@ -41,9 +57,9 @@
                                             <td class="fw-bold">
                                                 {{ $bln }}</td>
                                             <td class="fw-bold">
-                                                <input type="hidden" name="id_siswa" value="{{ $siswa[0]['id'] }}">
-                                                <input type="hidden" name="tahun_bayar" value="{{ $siswa[0]['tahun'] }}">
-                                                <input type="hidden" name="nominal" value="{{ $siswa[0]['nominal'] }}">
+                                                <input type="hidden" name="id_siswa" value="{{ $siswa->id }}">
+                                                <input type="hidden" name="tahun_bayar" value="{{ $siswa->tahun }}">
+                                                <input type="hidden" name="nominal" value="{{ $siswa->nominal }}">
                                                 @if ($statusPembayaran[$bln] == 'Sudah Dibayar')
                                                     Sudah Bayar
                                                 @else
@@ -76,8 +92,8 @@
                                             @if (Auth::user()->level == 'admin')
                                                 <button type="submit" class="btn btn-primary mt-3">Proses</button>
                                             @endif
-                                            <a href="{{ url('print/' . $siswa[0]['id']) }}" class="btn btn-secondary mt-3"
-                                                target="_blank">Print</a>
+                                            <a href="{{ url('print/' . $siswa->id_anggotakelas) }}"
+                                                class="btn btn-secondary mt-3" target="_blank">Print</a>
                                         </td>
                                     </tr>
                                 </form>

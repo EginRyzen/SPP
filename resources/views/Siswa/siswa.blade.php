@@ -45,7 +45,9 @@
                                     @foreach ($siswa as $data)
                                         <tr>
                                             <td class="fw-bold">{{ $no++ }}.</td>
-                                            <td class="fw-bold"><a href="">{{ Str::limit($data->nama, 20) }}</a></td>
+                                            <td class="fw-bold"><a class="text-primary"
+                                                    href="{{ url('datasiswa/' . $data->id) }}">{{ Str::limit($data->nama, 20) }}</a>
+                                            </td>
                                             <td class="fw-bold">{{ $data->nisn }}</td>
                                             <td class="fw-bold">{{ $data->nis }}</td>
                                             <td class="fw-bold">{{ $data->alamat }}</td>

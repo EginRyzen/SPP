@@ -127,24 +127,98 @@ class SiswaController extends Controller
         }
     }
 
-    public function datasiswa($id)
+    public function datasiswa($id, Request $request)
     {
+        // dd($id);
         $user = Auth::user();
 
         if ($user->level == 'admin' || $user->level == 'siswa') {
 
-            $siswa = Siswa::join('kelas', 'siswas.id_kelas', '=', 'kelas.id')
-                ->join('spps', 'siswas.id_spp', '=', 'spps.id')
-                ->select('kelas.nama_kelas', 'kelas.id as kelas_id', 'spps.nominal', 'spps.tahun', 'spps.id as idspp', 'siswas.*')
+            $siswa = Siswa::join('anggota_kelas', 'anggota_kelas.id_siswa', '=', 'siswas.id')
+                ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+                ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+                ->join('setting_spps', 'setting_spps.id', '=', 'anggota_kelas.id_setting_spp')
+                ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
                 ->where('siswas.id', $id)
+                ->select(
+                    'kelas.nama_kelas',
+                    'kelas.id as kelas_id',
+                    'spps.nominal',
+                    'spps.keterangan',
+                    'spps.id as idspp',
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'anggota_kelas.id as id_anggotakelas',
+                    'siswas.*'
+                )
+                ->orderBy('kelas.id', 'desc')
+                ->first();
+
+            $periode = Anggota_kelas::join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
+                ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+                ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+                ->where('anggota_kelas.id_siswa', $siswa->id)
+                ->select(
+                    'kelas.nama_kelas',
+                    'kelas.id as kelas_id',
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'anggota_kelas.id as id_anggotakelas',
+                    'siswas.*'
+                )
                 ->get();
+
+            $idperiode = $request->idperiode;
+            if (isset($idperiode)) {
+                $siswa = Siswa::join('anggota_kelas', 'anggota_kelas.id_siswa', '=', 'siswas.id')
+                    ->join('periode_kbms', 'periode_kbms.id', '=', 'anggota_kelas.id_periode')
+                    ->join('kelas', 'kelas.id', '=', 'anggota_kelas.id_kelas')
+                    ->join('setting_spps', 'setting_spps.id', '=', 'anggota_kelas.id_setting_spp')
+                    ->join('spps', 'spps.id', '=', 'setting_spps.id_spp')
+                    ->where('siswas.id', $id)
+                    ->where('anggota_kelas.id_periode', $idperiode)
+                    ->select(
+                        'kelas.nama_kelas',
+                        'kelas.id as kelas_id',
+                        'spps.nominal',
+                        'spps.keterangan',
+                        'spps.id as idspp',
+                        'periode_kbms.periodekbm_periode',
+                        'periode_kbms.id as idperiode',
+                        'anggota_kelas.id as id_anggotakelas',
+                        'siswas.*'
+                    )
+                    ->first();
+
+                $bulan = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'Oktober', 'November', 'December'
+                ];
+
+                $pembayaran = Pembayaran::where('id_anggotakelas', $siswa->id_anggotakelas)->get();
+
+                foreach ($bulan as $bln) {
+                    $statusPembayaran[$bln] = 'Belum Dibayar';
+                }
+
+                foreach ($pembayaran as $bayar) {
+                    $bulanPembayaran = $bayar->bulan_bayar;
+                    if (in_array($bulanPembayaran, $bulan)) {
+                        $statusPembayaran[$bulanPembayaran] = 'Sudah Dibayar';
+                    }
+                }
+                // dd($statusPembayaran);
+                return view('Siswa.datasiswa', compact('siswa', 'statusPembayaran', 'bulan', 'pembayaran', 'periode'));
+            }
+
+            // dd($periode);
 
             $bulan = [
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'Oktober', 'November', 'December'
             ];
 
-            $pembayaran = Pembayaran::where('id_siswa', $id)->get();
+            $pembayaran = Pembayaran::where('id_anggotakelas', $siswa->id_anggotakelas)->get();
 
             $statusPembayaran = [];
 
@@ -160,7 +234,7 @@ class SiswaController extends Controller
             }
 
             // dd($pembayaran);
-            return view('Siswa.datasiswa', compact('siswa', 'bulan', 'statusPembayaran', 'pembayaran'));
+            return view('Siswa.datasiswa', compact('siswa', 'statusPembayaran', 'bulan', 'pembayaran', 'periode'));
         }
         return back();
     }
