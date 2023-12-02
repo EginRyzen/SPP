@@ -57,8 +57,10 @@
                                             <td class="fw-bold">
                                                 {{ $bln }}</td>
                                             <td class="fw-bold">
-                                                <input type="hidden" name="id_siswa" value="{{ $siswa->id }}">
-                                                <input type="hidden" name="tahun_bayar" value="{{ $siswa->tahun }}">
+                                                <input type="hidden" name="id_anggotakelas"
+                                                    value="{{ $siswa->id_anggotakelas }}">
+                                                <input type="hidden" name="tahun_bayar"
+                                                    value="{{ $siswa->periodekbm_periode }}">
                                                 <input type="hidden" name="nominal" value="{{ $siswa->nominal }}">
                                                 @if ($statusPembayaran[$bln] == 'Sudah Dibayar')
                                                     Sudah Bayar

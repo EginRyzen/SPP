@@ -74,7 +74,6 @@ class SiswaController extends Controller
             // dd($idperiode);
 
             $settingspp = Setting_spp::where('id', $idperiode)->first();
-            // dd($settingspp);
 
             $user = [
                 'username' => $request->username,
