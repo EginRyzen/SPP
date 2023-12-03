@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Spp;
 use App\Models\User;
 use App\Models\Kelas;
 use App\Models\Siswa;
@@ -29,10 +28,26 @@ class SiswaController extends Controller
         if ($user->level == 'admin') {
 
             $siswa = Siswa::all();
-            $kelas = Kelas::all();
-            $periode = Periode_kbm::all();
+            $kelas = Kelas::join('periode_kbms', 'periode_kbms.id', '=', 'kelas.id_periode')
+                ->select(
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'kelas.*'
+                )
+                ->get();
+            $settingspp = Setting_spp::join('periode_kbms', 'periode_kbms.id', '=', 'setting_spps.id_periode')
+                ->join('spps', 'setting_spps.id_spp', '=', 'spps.id')
+                ->select(
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'setting_spps.*',
+                    'spps.nominal',
+                    'spps.keterangan',
+                    'spps.id as idspp',
+                )
+                ->get();
 
-            return view('Siswa.siswa', compact('siswa', 'kelas', 'periode'));
+            return view('Siswa.siswa', compact('siswa', 'kelas', 'settingspp'));
         }
 
         return back();
@@ -69,11 +84,11 @@ class SiswaController extends Controller
 
         if ($user->level == 'admin') {
 
-            $idperiode = $request->periode;
+            $idkelas = $request->id_kelas;
 
             // dd($idperiode);
 
-            $settingspp = Setting_spp::where('id', $idperiode)->first();
+            $periode = Kelas::where('id', $idkelas)->first();
 
             $user = [
                 'username' => $request->username,
@@ -100,9 +115,9 @@ class SiswaController extends Controller
 
             $anggota_kelas = [
                 'id_siswa' => $siswas->id,
-                'id_kelas' => $request->id_kelas,
-                'id_setting_spp' => $settingspp->id,
-                'id_periode' => $settingspp->id_periode,
+                'id_kelas' => $idkelas,
+                'id_setting_spp' => $request->id_settingspp,
+                'id_periode' => $periode->id_periode,
             ];
 
             Anggota_kelas::create($anggota_kelas);

@@ -16,7 +16,8 @@
                 <div class="col-md-12">
                     <div class="fresh-table full-color-orange">
                         <div class="toolbar">
-                            <button class="btn btn-default" data-toggle="modal" data-target="#siswa">Tambah Siswa</button>
+                            <button class="btn btn-default" data-toggle="modal" data-aksi="create"
+                                data-target="#siswa">Tambah Siswa</button>
                             <button class="btn btn-default" data-toggle="modal" data-target="#importsiswa">Import
                                 Siswa</button>
                         </div>
@@ -59,15 +60,18 @@
                                             <td class="fw-bold">{{ $data->no_telp }}</td>
                                             <td class="text-center">
                                                 <a href="{{ $data->id }}" type="button" class="m-2"
-                                                    data-toggle="modal" data-target="#siswa{{ $data->id }}"><i
-                                                        class="fa fa-edit"></i></a>
+                                                    data-toggle="modal" data-target="#siswa" data-aksi="edit"
+                                                    data-nama="{{ $data->nama }}" data-id="{{ $data->id }}"
+                                                    data-nisn="{{ $data->nisn }}" data-nis="{{ $data->nis }}"
+                                                    data-alamat="{{ $data->alamat }}"
+                                                    data-no_telp="{{ $data->no_telp }}"><i class="fa fa-edit"></i></a>
                                                 <a href="{{ url('siswa/' . $data->id) }}"
                                                     onclick="return confirm('Yakin Untuk di Hapus??')"><i
                                                         class="fa fa-trash"></i></a>
                                             </td>
                                         </tr>
                                         {{-- Update Modal --}}
-                                        <div class="modal fade" id="siswa{{ $data->id }}" tabindex="-1" role="dialog"
+                                        {{-- <div class="modal fade" id="siswa" tabindex="-1" role="dialog"
                                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
@@ -141,7 +145,7 @@
                                                     </form>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     @endforeach
                                 </tbody>
                             </table>
@@ -184,8 +188,7 @@
     </div>
 
     {{-- Create Modal --}}
-    <div class="modal fade" id="siswa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="siswa" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -194,23 +197,24 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ route('siswa.store') }}" method="POST">
+                <form action="{{ route('siswa.store') }}" method="POST" id="fstore">
                     @csrf
                     <div class="modal-body">
+                        <input type="hidden" name="_method" id="method" value="">
                         <div class="form-group row">
                             <div class="col-md-2 mt-2">
                                 <label for="">NIS :</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="number" name="nis" class="form-control" placeholder="Nis Siswa"
-                                    required>
+                                <input type="number" id="nis" name="nis" class="form-control"
+                                    placeholder="Nis Siswa" required>
                             </div>
                             <div class="col-md-2 mt-2">
                                 <label for="">NISN :</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="number" name="nisn" class="form-control" placeholder="NISN Siswa"
-                                    required>
+                                <input type="number" id="nisn" name="nisn" class="form-control"
+                                    placeholder="NISN Siswa" required>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -218,15 +222,15 @@
                                 <label for="">Nama Siswa :</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="nama" class="form-control" placeholder="Nama Siswa"
-                                    required>
+                                <input type="text" id="nama" name="nama" class="form-control"
+                                    placeholder="Nama Siswa" required>
                             </div>
                             <div class="col-md-2 mt-2">
                                 <label for="">Alamat Siswa :</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="alamat" class="form-control" placeholder="ALamat Siswa"
-                                    required>
+                                <input type="text" id="alamat" name="alamat" class="form-control"
+                                    placeholder="ALamat Siswa" required>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -234,51 +238,59 @@
                                 <label for="">Telp Siswa :</label>
                             </div>
                             <div class="col-md-4">
-                                <input type="number" name="no_telp" class="form-control" placeholder="Telp Siswa"
-                                    required>
+                                <input type="number" id="no_telp" name="no_telp" class="form-control"
+                                    placeholder="Telp Siswa" required>
                             </div>
-                            <div class="col-md-2 mt-2">
+                            <div class="col-md-2 mt-2" id="usernameLabel">
                                 <label for="">UserName :</label>
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" name="username" class="form-control" placeholder="Username Siswa"
-                                    required>
+                            <div class="col-md-4" id="usernameInput">
+                                <input type="text" id="username" name="username" class="form-control"
+                                    placeholder="Username Siswa" required>
                             </div>
 
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" id="selectGroup">
                             <div class="col-md-2 mt-2">
                                 <label for="">Kelas :</label>
                             </div>
                             <div class="col-md-4">
-                                <select name="id_kelas" class="form-select" required>
-                                    <option value="" selected disabled>-- Pilih Kelas --</option>
-                                    @foreach ($kelas as $data)
-                                        <option value="{{ $data->id }}">{{ $data->nama_kelas }} |
-                                            {{ $data->kompetensi_keahlian }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="select2-purple">
+                                    <select name="id_kelas" id="selectKelas" class="form-control select2"
+                                        style="width: 100%;" required>
+                                        <option value="" selected disabled>-- Pilih Kelas --</option>
+                                        @foreach ($kelas as $data)
+                                            <option value="{{ $data->id }}">{{ $data->nama_kelas }} |
+                                                {{ $data->kompetensi_keahlian }} | {{ $data->periodekbm_periode }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-2 mt-2">
-                                <label for="">Tahun Periode :</label>
+                                <label for="">SPP :</label>
                             </div>
                             <div class="col-md-4">
-                                <select name="periode" class="form-select" required>
-                                    <option value="" selected disabled>-- Pilih Tahun --</option>
-                                    @foreach ($periode as $data)
-                                        <option value="{{ $data->id }}">{{ $data->periodekbm_periode }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="select2-purple">
+                                    <select name="id_settingspp" id="selectSpp" class="form-control select2"
+                                        style="width: 100%;" required>
+                                        <option value="" selected disabled>-- Pilih Spp --</option>
+                                        @foreach ($settingspp as $data)
+                                            <option value="{{ $data->id }}">Rp.
+                                                {{ number_format($data->nominal, 0, ',', '.') }} |
+                                                {{ $data->periodekbm_periode }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" id="passwordGroup">
                             <div class="col-md-2 mt-2">
                                 <label for="">Password :</label>
                             </div>
                             <div class="col-md-10">
-                                <input type="password" minlength=3 name="password" class="form-control"
+                                <input type="password" id="password" minlength=3 name="password" class="form-control"
                                     placeholder="Password Siswa" required>
                             </div>
                         </div>
@@ -302,6 +314,68 @@
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('dist/js/demo.js') }}"></script>
+    <script>
+        $(function() {
+            $('#siswa').on('show.bs.modal', function(e) {
+                const btn = $(e.relatedTarget);
+                const aksi = btn.data('aksi');
+
+                const id = btn.data('id');
+                const nama = btn.data('nama');
+                const nisn = btn.data('nisn');
+                const nis = btn.data('nis');
+                const alamat = btn.data('alamat');
+                const no_telp = btn.data('no_telp');
+
+                const passwordGroup = $('#passwordGroup');
+                const selectGroup = $('#selectGroup');
+                const usernameGroup = $('#usernameLabel, #usernameInput');
+
+                if (aksi === 'create') {
+                    $('#nis').val("");
+                    $('#nisn').val("");
+                    $('#nama').val("");
+                    $('#alamat').val("");
+                    $('#no_telp').val("");
+                    $('#username').val("");
+                    $('#selecKelas').val("");
+                    $('#selectSpp').val("");
+                    $('#password').val("");
+                    passwordGroup.show();
+                    selectGroup.show();
+                    usernameGroup.show();
+                }
+                if (aksi === 'edit') {
+                    $('#method').val('PUT');
+                    $('#fstore').attr('action', 'siswa/' + id);
+                    $('#selectSpp').removeAttr('required');
+                    $('#selectKelas').removeAttr('required');
+                    $('#password').removeAttr('required');
+                    $('#username').removeAttr('required');
+                    passwordGroup.hide();
+                    selectGroup.hide();
+                    usernameGroup.hide();
+                    $('#nis').val(nis);
+                    $('#nisn').val(nisn);
+                    $('#nama').val(nama);
+                    $('#alamat').val(alamat);
+                    $('#no_telp').val(no_telp);
+                    // alert('hello ges');
+                }
+            });
+        });
+    </script>
+    <script>
+        $(function() {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
     <!-- Table -->
     <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
