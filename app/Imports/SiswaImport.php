@@ -16,16 +16,11 @@ class SiswaImport implements ToModel, WithHeadingRow
 {
     use Importable;
 
-    protected $siswas;
-    protected $kelas;
-    protected $spps;
     protected $users;
 
     public function __construct()
     {
-        $this->kelas = Kelas::select("id", "nama_kelas")->get();
-        $this->spps = Spp::select('id', 'tahun')->get();
-        $this->users = User::select('id', 'nama_petugas')->get();
+        $this->users = User::select('id', 'nama_petugas',)->get();
 
         // dd($this->kelas);
     }
@@ -40,14 +35,10 @@ class SiswaImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        $kelas = $this->kelas->where('nama_kelas', $row['NamaKelas'])->first();
-        $spps = $this->spps->where('tahun', $row['Tahun'])->first();
         $users = $this->users->where('nama_petugas', $row['Nama'])->first();
         // dd($kelas);
 
         $data = Siswa::where('nisn', $row['Nisn'])->firstOrNew();
-        $data->id_kelas = $kelas->id;
-        $data->id_spp = $spps->id;
         $data->id_user = $users->id;
         $data->nisn = $row['Nisn'];
         $data->nis = $row['Nis'];
