@@ -11,7 +11,8 @@
                 <div class="col-md-12">
                     <div class="fresh-table full-color-orange">
                         <div class="toolbar">
-                            <button class="btn btn-default" data-toggle="modal" data-target="#periode">Tambah Kelas</button>
+                            <button class="btn btn-default" data-toggle="modal" data-aksi="create"
+                                data-target="#periode">Tambah Tahun Periode</button>
                         </div>
                         @if (session()->has('hapus'))
                             <div class="alert alert-danger text-white fw-bold" role="alert">
@@ -45,12 +46,16 @@
                                         <td class="fw-bold">{{ $data->periodekbm_tanggalakhir }}</td>
                                         <td class="text-center">
                                             <a href="{{ $data->id }}" type="button" class="m-2" data-toggle="modal"
-                                                data-target="#periode{{ $data->id }}"><i class="fa fa-edit"></i></a>
+                                                data-target="#periode" data-aksi="edit" data-id="{{ $data->id }}"
+                                                data-periode="{{ $data->periodekbm_periode }}"
+                                                data-periode_awal="{{ $data->periodekbm_tanggalawal }}"
+                                                data-periode_akhir="{{ $data->periodekbm_tanggalakhir }}"><i
+                                                    class="fa fa-edit"></i></a>
                                             <a href="{{ url('periode/' . $data->id) }}"><i class="fa fa-trash"></i></a>
                                         </td>
                                     </tr>
                                     {{-- Update Modal --}}
-                                    <div class="modal fade" id="periode{{ $data->id }}" tabindex="-1" role="dialog"
+                                    {{-- <div class="modal fade" id="periode{{ $data->id }}" tabindex="-1" role="dialog"
                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -104,7 +109,7 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 @endforeach
                             </tbody>
                         </table>
@@ -125,15 +130,17 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ route('periode.store') }}" method="POST">
+                <form action="{{ route('periode.store') }}" method="POST" id="store">
                     @csrf
                     <div class="modal-body">
+                        <input type="hidden" name="_method" id="method" value="">
                         <div class="form-group row">
                             <div class="col-md-3 mt-2">
                                 <label for="">Tahun KBM :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="periodekbm_periode" class="form-control" required>
+                                <input type="text" name="periodekbm_periode" id="periodekbm" class="form-control"
+                                    required>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -141,7 +148,8 @@
                                 <label for="">Tahun Awal :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="date" name="periodekbm_tanggalawal" class="form-control" required>
+                                <input type="date" name="periodekbm_tanggalawal" id="periode_awal" class="form-control"
+                                    required>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -149,7 +157,8 @@
                                 <label for="">Tahun Akhir :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="date" name="periodekbm_tanggalakhir" class="form-control" required>
+                                <input type="date" name="periodekbm_tanggalakhir" id="periode_akhir" class="form-control"
+                                    required>
                             </div>
                         </div>
                     </div>
@@ -166,6 +175,37 @@
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        $(function() {
+            $('#periode').on('show.bs.modal', function(e) {
+                // console.log('Modal is about to show');
+                var btn = $(e.relatedTarget);
+                var aksi = btn.data('aksi');
+
+                var id = btn.data('id');
+                var periode = btn.data('periode');
+                var periode_awal = btn.data('periode_awal');
+                var periode_akhir = btn.data('periode_akhir');
+                console.log(periode);
+
+                if (aksi === 'create') {
+                    // alert('hello');
+                    $('#periodekbm').val("");
+                    $('#periode_awal').val("");
+                    $('#periode_akhir').val("");
+                }
+                if (aksi === 'edit') {
+                    // alert('heheh')
+                    $('#store').attr('action', 'periode/' + id);
+                    $('#periodekbm').val(periode);
+                    $('#periode_awal').val(periode_awal);
+                    $('#periode_akhir').val(periode_akhir);
+                    $('#method').val('PUT');
+                }
+
+            })
+        })
+    </script>
     <!-- Table -->
     <script src="{{ url('vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ url('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
