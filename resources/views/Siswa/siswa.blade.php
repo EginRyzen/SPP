@@ -21,6 +21,23 @@
                             <button class="btn btn-default" data-toggle="modal" data-target="#importsiswa">Import
                                 Siswa</button>
                         </div>
+                        @if (Session::has('nominal'))
+                            <script>
+                                window.alert("Nominal Dan Periode Tidak Cocok Silahkan Cek Di Table Setting Spp");
+                            </script>
+                        @endif
+                        @if (Session::has('kelas'))
+                            <script>
+                                window.alert(
+                                    "Kelas Dan Periode Tidak Cocok Silahkan Cek Di Table Kelas Dan Seetting Spp,Periode Yang Anda Masukan Harus Sama"
+                                );
+                            </script>
+                        @endif
+                        {{-- @if (Session::has('tahun'))
+                            <script>
+                                window.alert("Periode Tidak Di Temukan Silahkan Cek Kembali");
+                            </script>
+                        @endif --}}
                         @if (session()->has('hapus'))
                             <div class="alert alert-danger text-white fw-bold" role="alert">
                                 Kelas Telah Terhapus
@@ -304,21 +321,4 @@
     <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
-    @if (Session::has('import_status'))
-        {{-- @if (Session::get('import_status') == 'periode_not_found')
-            <script>
-                alert("Periode Tidak Cocok Silahkan Cek Di Table Periode KBM");
-            </script>
-        @endif --}}
-        @if (Session::get('import_status') == 'nominal')
-            <script>
-                window.alert("Nominal Dan Periode Tidak Cocok Silahkan Cek Di Table Setting Spp");
-            </script>
-        @endif
-        @if (Session::get('import_status') == 'kelas')
-            <script>
-                window.alert("Kelas Dan Periode Tidak Cocok Silahkan Cek Di Table Kelas");
-            </script>
-        @endif
-    @endif
 @endsection

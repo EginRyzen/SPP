@@ -44,9 +44,10 @@ class AnggotaKelasImport implements ToModel, WithHeadingRow
     {
         $siswas = $this->siswas->where('nama', $row['Nama'])->first();
         $periode = Periode_kbm::where('periodekbm_periode', $row['Periode'])->first();
+        // dd($periode);
         if ($periode) {
             $nominal = Spp::where('nominal', $row['Nominal'])->first();
-
+            // dd($nominal);
             // Periksa apakah $nominal tidak null sebelum mencoba membaca propertinya
             if ($nominal) {
                 $kelas = Kelas::where('nama_kelas', $row['NamaKelas'])
@@ -66,19 +67,18 @@ class AnggotaKelasImport implements ToModel, WithHeadingRow
                         'id_kelas' => $kelas->id,
                         'id_setting_spp' => $setting_spps->id,
                         'id_periode' => $kelas->id_periode,
-                        // 'id_kelas' => $setting_spps->id,
                     ]);
                 } else {
                     // $kelas bernilai null, menampilkan alert menggunakan JavaScript
-                    Session::flash('import_status', 'kelas');
+                    Session::flash('kelas', 'kelas_not_found');
                 }
             } else {
                 // $nominal bernilai null, menampilkan alert menggunakan JavaScript
-                Session::flash('import_status', 'nominal');
+                Session::flash('nominal', 'nominal');
             }
         } else {
             // $periode bernilai null, menampilkan alert menggunakan JavaScript
-            Session::flash('import_status', 'periode_not_found');
+            Session::flash('periode', 'periode_not_found');
         }
     }
 }
