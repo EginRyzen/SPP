@@ -21,10 +21,10 @@ class UserImport implements ToModel, WithHeadingRow
 
         $data = User::where('nama_petugas', $row['Nama'])->firstOrNew();
         // dd($row['Username']);
-        $data->username = $row['Username'];
+        $data->username = trim($row['Username']);
+        // dd($data->username);
         $data->nama_petugas = $row['Nama'];
         $data->password = Hash::make($row['Password']);
-        // dd($data->username);
         return $data;
         // return new User([
 

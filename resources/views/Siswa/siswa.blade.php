@@ -70,82 +70,6 @@
                                                         class="fa fa-trash"></i></a>
                                             </td>
                                         </tr>
-                                        {{-- Update Modal --}}
-                                        {{-- <div class="modal fade" id="siswa" tabindex="-1" role="dialog"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Update Spp</h5>
-                                                        <button class="btn btn-default close" type="button"
-                                                            data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">×</span>
-                                                        </button>
-                                                    </div>
-                                                    <form action="{{ url('siswa/' . $data->id) }}" method="POST">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <div class="modal-body">
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">NIS :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <input type="number" name="nis"
-                                                                        value="{{ $data->nis }}" class="form-control"
-                                                                        placeholder="Nis Siswa" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">NISN :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <input type="number" name="nisn"
-                                                                        value="{{ $data->nisn }}" class="form-control"
-                                                                        placeholder="NISN Siswa" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">Nama Siswa :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <input type="text" name="nama"
-                                                                        value="{{ $data->nama }}" class="form-control"
-                                                                        placeholder="Nama Siswa" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">Alamat Siswa :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <input type="text" name="alamat"
-                                                                        value="{{ $data->alamat }}" class="form-control"
-                                                                        placeholder="ALamat Siswa" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group row">
-                                                                <div class="col-md-3 mt-2">
-                                                                    <label for="">Telp Siswa :</label>
-                                                                </div>
-                                                                <div class="col-md-8">
-                                                                    <input type="number" name="no_telp"
-                                                                        value="{{ $data->no_telp }}" class="form-control"
-                                                                        placeholder="Telp Siswa" required>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button class="btn btn-secondary" type="button"
-                                                                data-dismiss="modal">Cancel</button>
-                                                            <button class="btn btn-primary" type="submit">Save</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div> --}}
                                     @endforeach
                                 </tbody>
                             </table>
@@ -380,4 +304,21 @@
     <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+    @if (Session::has('import_status'))
+        {{-- @if (Session::get('import_status') == 'periode_not_found')
+            <script>
+                alert("Periode Tidak Cocok Silahkan Cek Di Table Periode KBM");
+            </script>
+        @endif --}}
+        @if (Session::get('import_status') == 'nominal')
+            <script>
+                window.alert("Nominal Dan Periode Tidak Cocok Silahkan Cek Di Table Setting Spp");
+            </script>
+        @endif
+        @if (Session::get('import_status') == 'kelas')
+            <script>
+                window.alert("Kelas Dan Periode Tidak Cocok Silahkan Cek Di Table Kelas");
+            </script>
+        @endif
+    @endif
 @endsection

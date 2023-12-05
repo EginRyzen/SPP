@@ -7,14 +7,15 @@ use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Pembayaran;
 use App\Imports\UserImport;
+use App\Models\Setting_spp;
 use App\Imports\SiswaImport;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Anggota_kelas;
-use App\Models\Periode_kbm;
-use App\Models\Setting_spp;
+use App\Imports\AnggotaKelasImport;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Session;
 
 class SiswaController extends Controller
 {
@@ -310,7 +311,7 @@ class SiswaController extends Controller
 
             Excel::import(new UserImport, public_path('/filesiswa/' . $nama_file));
             Excel::import(new SiswaImport, public_path('/filesiswa/' . $nama_file));
-            // Excel::import(new AnggotaKelasImport, public_path('/filesiswa/' . $nama_file));
+            Excel::import(new AnggotaKelasImport, public_path('/filesiswa/' . $nama_file));
 
             return back();
         }
