@@ -16,7 +16,8 @@
                 <div class="col-md-12">
                     <div class="fresh-table full-color-orange">
                         <div class="toolbar">
-                            <button class="btn btn-default" data-toggle="modal" data-target="#kelas">Tambah Kelas</button>
+                            <button class="btn btn-default" data-toggle="modal" data-aksi="create"
+                                data-target="#kelas">Tambah Kelas</button>
                         </div>
                         @if (session()->has('hapus'))
                             <div class="alert alert-danger text-white fw-bold" role="alert">
@@ -50,77 +51,13 @@
                                         <td class="fw-bold">{{ $data->periodekbm_periode }}</td>
                                         <td class="text-center">
                                             <a href="{{ $data->id }}" type="button" class="m-2" data-toggle="modal"
-                                                data-target="#kelas{{ $data->id }}"><i class="fa fa-edit"></i></a>
+                                                data-target="#kelas" data-aksi="edit" data-id="{{ $data->id }}"
+                                                data-nama_kelas="{{ $data->nama_kelas }}"
+                                                data-keahlian="{{ $data->kompetensi_keahlian }}"
+                                                data-periode="{{ $data->idperiode }}"><i class="fa fa-edit"></i></a>
                                             <a href="{{ url('kelas/' . $data->id) }}"><i class="fa fa-trash"></i></a>
                                         </td>
                                     </tr>
-                                    {{-- Update Modal --}}
-                                    <div class="modal fade" id="kelas{{ $data->id }}" role="dialog"
-                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Update Kelas</h5>
-                                                    <button class="btn btn-default close" type="button"
-                                                        data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">×</span>
-                                                    </button>
-                                                </div>
-                                                <form action="{{ url('kelas/' . $data->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-body">
-                                                        <div class="form-group row">
-                                                            <div class="col-md-3">
-                                                                <label for="">Tahun Ajaran</label>
-                                                            </div>
-                                                            <div class="col-md-8">
-                                                                <div class="select2-purple">
-                                                                    <select name="id_periode" id="selectPeriode"
-                                                                        class="form-control select2" style="width: 100%;">
-                                                                        <option selected="selected">--- Pilih Tahun ---
-                                                                        </option>
-                                                                        @foreach ($periode as $tahun)
-                                                                            <option
-                                                                                @if ($tahun->id == $data->id_periode) selected @endif
-                                                                                value="{{ $tahun->id }}">
-                                                                                {{ $tahun->periodekbm_periode }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-md-3 mt-2">
-                                                                <label for="">Nama Kelas :</label>
-                                                            </div>
-                                                            <div class="col-md-8">
-                                                                <input type="text" name="nama_kelas"
-                                                                    value="{{ $data->nama_kelas }}" class="form-control"
-                                                                    required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <div class="col-md-3 mt-2">
-                                                                <label for="">Kompetensi Keahlian :</label>
-                                                            </div>
-                                                            <div class="col-md-8">
-                                                                <input type="text" name="kompetensi_keahlian"
-                                                                    value="{{ $data->kompetensi_keahlian }}"
-                                                                    class="form-control" required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button class="btn btn-secondary" type="button"
-                                                            data-dismiss="modal">Cancel</button>
-                                                        <button class="btn btn-primary" type="submit">Save</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
@@ -140,7 +77,8 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ route('kelas.store') }}" method="POST">
+                <form action="{{ route('kelas.store') }}" method="POST" id="fstore">
+                    <input type="hidden" name="_method" id="method" value="">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group row">
@@ -167,7 +105,7 @@
                                 <label for="">Nama Kelas :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="nama_kelas" class="form-control" required>
+                                <input type="text" id="nama_kelas" name="nama_kelas" class="form-control" required>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -175,7 +113,8 @@
                                 <label for="">Kompetensi Keahlian :</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" name="kompetensi_keahlian" class="form-control" required>
+                                <input type="text" id="keahlian" name="kompetensi_keahlian" class="form-control"
+                                    required>
                             </div>
                         </div>
                     </div>
@@ -208,6 +147,37 @@
                 theme: 'bootstrap4'
             })
         })
+    </script>
+    <script>
+        $(function() {
+            $('#kelas').on('show.bs.modal', function(e) {
+                // console.log('Modal is about to show');
+                var btn = $(e.relatedTarget);
+                var aksi = btn.data('aksi');
+                // alert('tess');
+
+                var id = btn.data('id');
+                var periode = btn.data('periode');
+                var nama_kelas = btn.data('nama_kelas');
+                var keahlian = btn.data('keahlian');
+                // console.log(periode);
+
+                if (aksi === 'create') {
+                    // alert('hello');
+                    $('#nama_kelas').val("");
+                    $('#keahlian').val("");
+                    $('#selectPeriode').val("");
+                }
+                if (aksi === 'edit') {
+                    $('#fstore').attr('action', 'kelas/' + id);
+                    $('#selectPeriode').val(periode).trigger('change');
+                    $('#nama_kelas').val(nama_kelas);
+                    $('#keahlian').val(keahlian);
+                    $('#method').val('PUT');
+                }
+
+            });
+        });
     </script>
     <!-- Table -->
     <script src="{{ url('vendor/datatables/jquery.dataTables.min.js') }}"></script>
