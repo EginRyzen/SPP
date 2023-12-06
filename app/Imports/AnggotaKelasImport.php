@@ -8,6 +8,7 @@ use App\Models\Siswa;
 use App\Models\Periode_kbm;
 use App\Models\Setting_spp;
 use App\Models\Anggota_kelas;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -45,16 +46,19 @@ class AnggotaKelasImport implements ToModel, WithHeadingRow
         $siswas = $this->siswas->where('nama', $row['Nama'])->first();
         $periode = Periode_kbm::where('periodekbm_periode', $row['Periode'])->first();
         // dd($periode);
+        Log::info('Debug Info', ['siswas' => $siswas, 'periode' => $periode]);
         if ($periode) {
             $nominal = Spp::where('nominal', $row['Nominal'])->first();
             // dd($nominal);
             // Periksa apakah $nominal tidak null sebelum mencoba membaca propertinya
+            Log::info('Debug Info2', ['siswas' => $siswas, 'periode' => $periode]);
             if ($nominal) {
                 $kelas = Kelas::where('nama_kelas', $row['NamaKelas'])
                     ->where('id_periode', $periode->id)
                     ->first();
 
                 // dd($kelas);
+                Log::info('Debug Info3', ['kelas' => $kelas]);
 
                 // Periksa apakah $kelas tidak null sebelum mencoba membaca propertinya
                 if ($kelas) {
@@ -77,8 +81,10 @@ class AnggotaKelasImport implements ToModel, WithHeadingRow
                 Session::flash('nominal', 'nominal');
             }
         } else {
+            Log::info('Debug Info4', ['siswas' => $siswas, 'periode' => $periode]);
             // $periode bernilai null, menampilkan alert menggunakan JavaScript
-            Session::flash('periode', 'periode_not_found');
+            Session::flash('tahun', 'periode_not_found');
         }
+        // Log::info('Debug Info', ['row' => $row]);
     }
 }

@@ -33,11 +33,11 @@
                                 );
                             </script>
                         @endif
-                        {{-- @if (Session::has('tahun'))
+                        @if (Session::has('tahun'))
                             <script>
                                 window.alert("Periode Tidak Di Temukan Silahkan Cek Kembali");
                             </script>
-                        @endif --}}
+                        @endif
                         @if (session()->has('hapus'))
                             <div class="alert alert-danger text-white fw-bold" role="alert">
                                 Kelas Telah Terhapus
