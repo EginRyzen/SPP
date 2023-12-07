@@ -16,7 +16,7 @@
                 <div class="col-md-12">
                     <div class="fresh-table full-color-orange">
                         <div class="toolbar">
-                            <button class="btn btn-default">Import Data</button>
+                            {{-- <button class="btn btn-default">Import Data</button> --}}
                             @if (session()->has('pesan'))
                                 <p class="text-danger fw-bold">Data Siswa Tinggal 1 Satu Tidak Dapat Di Hapus!!</p>
                             @endif
@@ -81,7 +81,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create Kelas</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Anngota Kelas</h5>
                     <button class="btn btn-default close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -92,7 +92,7 @@
                         <input type="hidden" name="_method" id="method" value="">
                         <div class="form-group row">
                             <div class="col-md-3 mt-2">
-                                <label for="">Nama Kelas :</label>
+                                <label for="">Nama Siswa :</label>
                             </div>
                             <div class="col-md-8">
                                 <div class="select2-purple">
@@ -101,7 +101,8 @@
                                         <option selected="selected">--- Pilih Kelas ---</option>
                                         @foreach ($kelas as $data)
                                             <option value="{{ $data->id }}">{{ $data->nama_kelas }} |
-                                                {{ $data->kompetensi_keahlian }}</option>
+                                                {{ $data->kompetensi_keahlian }} | {{ $data->periodekbm_periode }}
+                                            </option>
                                         @endforeach
                                     </select>
 
@@ -116,10 +117,28 @@
                                 <div class="select2-purple">
                                     <select name="idsiswa" id="selectSiswa" class="form-control select2"
                                         style="width: 100%;">
-                                        <option selected="selected">--- Pilih Kelas ---</option>
+                                        <option selected="selected">--- Pilih Siswa ---</option>
                                         @foreach ($siswa as $data)
                                             <option value="{{ $data->id }}">{{ $data->nama }} |
                                                 {{ $data->nis }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3 mt-2">
+                                <label for="">SPP :</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="select2-purple">
+                                    <select name="id_settingspp" id="selectSpp" class="form-control select2"
+                                        style="width: 100%;">
+                                        <option selected="selected">--- Pilih SPP ---</option>
+                                        @foreach ($settingspp as $data)
+                                            <option value="{{ $data->id }}">{{ $data->nominal }} |
+                                                {{ $data->periodekbm_periode }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -174,12 +193,15 @@
                 var idkelas = btn.data('kelas');
                 var idsiswa = btn.data('siswa');
                 var idperiode = btn.data('periode');
+                var idsetting = btn.data('setting');
+                // alert(idsetting);
 
                 if (aksi === 'edit') {
                     $('#fstore').attr('action', 'anggotakelas/' + id);
                     $('#selectKelas').val(idkelas).trigger('change');
                     $('#selectSiswa').val(idsiswa).trigger('change');
                     $('#selectPeriode').val(idperiode).trigger('change');
+                    $('#selectSpp').val(idsetting).trigger('change');
                     $('#method').val('PUT');
                 }
                 if (aksi === 'duplicate') {
@@ -187,6 +209,7 @@
                     $('#selectKelas').val(idkelas).trigger('change');
                     $('#selectSiswa').val(idsiswa).trigger('change');
                     $('#selectPeriode').val(idperiode).trigger('change');
+                    $('#selectSpp').val(idsetting).trigger('change');
                 }
 
             })

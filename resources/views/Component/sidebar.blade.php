@@ -130,7 +130,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link"
-                @if (Auth::user()->level == 'admin' || Auth::user()->level == 'petugas') href="{{ url('profile/' . Auth::user()->id) }}"
+                @if (Auth::user()->level == 'admin' || Auth::user()->level == 'petugas') href="javascript:;"
                 @else
                 href="{{ url('datasiswa/' . session('siswa')['id']) }}" @endif>
                 <div

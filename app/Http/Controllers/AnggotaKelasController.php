@@ -21,8 +21,25 @@ class AnggotaKelasController extends Controller
         $user = Auth::user();
 
         if ($user->level == 'admin') {
-            $kelas = Kelas::all();
+            $kelas = Kelas::join('periode_kbms', 'periode_kbms.id', '=', 'kelas.id_periode')
+                ->select(
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'kelas.*'
+                )
+                ->get();
             $siswa = Siswa::all();
+            $settingspp = Setting_spp::join('periode_kbms', 'periode_kbms.id', '=', 'setting_spps.id_periode')
+                ->join('spps', 'setting_spps.id_spp', '=', 'spps.id')
+                ->select(
+                    'periode_kbms.periodekbm_periode',
+                    'periode_kbms.id as idperiode',
+                    'setting_spps.*',
+                    'spps.nominal',
+                    'spps.keterangan',
+                    'spps.id as idspp',
+                )
+                ->get();
             $periode = Periode_kbm::all();
 
             $anggota_kelas = Anggota_kelas::join('siswas', 'siswas.id', '=', 'anggota_kelas.id_siswa')
@@ -46,7 +63,7 @@ class AnggotaKelasController extends Controller
 
             // dd($anggota_kelas);
 
-            return view('AnggotaKelas.anggotakelas', compact('anggota_kelas', 'kelas', 'siswa', 'periode'));
+            return view('AnggotaKelas.anggotakelas', compact('anggota_kelas', 'kelas', 'siswa', 'periode', 'settingspp'));
         }
 
         return back();
@@ -66,19 +83,15 @@ class AnggotaKelasController extends Controller
     {
         $kelas = $request->idkelas;
         $periode = $request->idperiode;
-
-        // dd($kelas);
-
-        $settingspp = Setting_spp::where('id_periode', $periode)
-            ->first();
+        $spp = $request->id_settingspp;
 
         // dd($settingspp);
 
         $data = [
             'id_kelas' => $kelas,
             'id_siswa' => $request->idsiswa,
-            'id_periode' => $request->idperiode,
-            'id_setting_spp' => $settingspp->id,
+            'id_periode' => $periode,
+            'id_setting_spp' => $spp,
         ];
 
         Anggota_kelas::create($data);
@@ -124,6 +137,7 @@ class AnggotaKelasController extends Controller
             'id_kelas' => $request->idkelas,
             'id_siswa' => $request->idsiswa,
             'id_periode' => $request->idperiode,
+            'id_setting_spp' => $request->id_settingspp,
         ];
 
         Anggota_kelas::where('id', $id)->update($data);

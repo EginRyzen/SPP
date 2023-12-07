@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota_kelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,9 +33,14 @@ class FrontController extends Controller
         if (Auth::attempt($data)) {
             $user = Auth::user();
             if ($user->level == 'siswa') {
+                // dd($user);
                 $siswa = Siswa::where('id_user', $user->id)->first();
+                // dd($siswa);
+                $anggota = Anggota_kelas::where('id_siswa', $siswa->id)->first();
 
-                $request->session()->put('siswa', $siswa);
+                // dd($anggota);
+
+                $request->session()->put('siswa', $siswa, $anggota);
                 return redirect('dasbord');
             }
             return redirect('dasbord');
